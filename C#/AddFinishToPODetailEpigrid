@@ -1,0 +1,37 @@
+/* Add Finish to PO Detail Epigrid */
+THIS IS A TEST
+//Create a reference the part table
+Erp.Tables.Part Part;
+//Create a reference UD01 table (Finish)
+Ice.Tables.UD01 UD01;
+
+//Loop through the lines in PurchaseOrder DTL table
+foreach (var ttPODetail_xRow in ttPODetail)
+{
+        foreach (var ttPODetail_iterator in (from ttPODetail_Row in ttPODetail
+                select ttPODetail_Row))
+        {
+                var ttPODetailRow = ttPODetail_iterator;
+                if (ttPODetail_xRow != null)
+                {
+
+//Find the Part finish code using the part number
+                        Part = (from Part_Row in Db.Part
+                                                where string.Compare(Part_Row.Company, ttPODetailRow.Company, true) == 0 && (Part_Row.PartNum == ttPODetailRow.PartNum)
+                                                select Part_Row).FirstOrDefault();
+
+//Set BPMData field Character01 to the finish code  --> This will be copied to the table value field by BPM next step
+callContextBpmData.Character01 = Part.finish_c;
+
+//Find the Part description using the finish code from the BPMData field Charactero01
+                        UD01 = (from UD01_Row in Db.UD01
+                                                where string.Compare(UD01_Row.Company, ttPODetailRow.Company, true) == 0 && (UD01_Row.Key1 == callContextBpmData.Character01)
+                                                select UD01_Row).FirstOrDefault();
+
+//Set BPMData field Character02 to the full finish description  --> This will be copied to the table value field by BPM next step
+                                                callContextBpmData.Character02 = UD01.Character01;
+                }
+}
+}
+
+erp.Tables.

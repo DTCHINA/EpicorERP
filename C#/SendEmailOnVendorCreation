@@ -1,0 +1,38 @@
+/*Send an Email on Vendor Creation*/
+//Setup the string variables
+string vapprov = string.Empty;
+string vbuyer = string.Empty;
+
+//Reference the necesary tables
+Erp.Tables.PurAgent PurAgent;
+//Loop through the temp PO Header Rows
+foreach (var ttPOHeader_xRow in ttPOHeader)
+{
+//Loop through the temp PO Header Rows if the approval status is "P"
+foreach (var ttPOHeader_iterator in (from ttPOHeader_Row in ttPOHeader
+                                     where string.Compare(ttPOHeader_Row.ApprovalStatus, "P", true) == 0
+                                     select ttPOHeader_Row))
+{
+    var ttPOHeaderRow = ttPOHeader_iterator;
+    if (ttPOHeader_xRow != null)
+    {
+        PurAgent = (from PurAgent_Row in Db.PurAgent
+                    where string.Compare(PurAgent_Row.Company, ttPOHeaderRow.Company, true) == 0 && string.Compare(PurAgent_Row.BuyerID, ttPOHeaderRow.BuyerID, true) == 0
+                    select PurAgent_Row).FirstOrDefault();
+        vapprov = PurAgent.ApprovalPerson;
+        PurAgent = (from PurAgent_Row in Db.PurAgent
+                    where string.Compare(PurAgent_Row.Company, ttPOHeaderRow.Company, true) == 0 && string.Compare(PurAgent_Row.BuyerID, vapprov, true) == 0
+                    select PurAgent_Row).FirstOrDefault();
+        vapprov = PurAgent.EMailAddress;
+        PurAgent = (from PurAgent_Row in Db.PurAgent
+                    where string.Compare(PurAgent_Row.Company, ttPOHeaderRow.Company, true) == 0 && string.Compare(PurAgent_Row.BuyerID, ttPOHeaderRow.BuyerID, true) == 0
+                    select PurAgent_Row).FirstOrDefault();
+        vbuyer = PurAgent.EMailAddress;
+        if (!String.IsNullOrEmpty(vapprov))
+        {
+					callContextBpmData.Character01 = vbuyer;
+					callContextBpmData.Character02 = vapprov;
+        }
+    }
+}
+}
