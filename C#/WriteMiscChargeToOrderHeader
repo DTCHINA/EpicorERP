@@ -1,0 +1,25 @@
+/*Write a Misc Charge to the Order Header Table*/
+//Set the variable up
+var newCustomersRow = ttOrderMsc.NewRow();
+//Set the Company
+newCustomersRow["Company"] = "SECONPLC";
+//Set the Frequency Code
+newCustomersRow["FreqCode"] = "F";
+//Set the Order Number
+newCustomersRow["OrderNum"] = Convert.ToInt32(callContextBpmData.Number20);
+//Set Percentage of Fee
+newCustomersRow["Percentage"] = callContextBpmData.Number03;
+//Set totalfeeamount
+newCustomersRow["DocMiscAmt"] = callContextBpmData.Number10;
+//Set the order Line Number to 0 so its in the header
+newCustomersRow["OrderLine"] = 0;
+//Set the Fee Description
+newCustomersRow["Description"] = callContextBpmData.Character01;
+//Set the Sequence Number
+newCustomersRow["SeqNum"] = 0;
+//Set the Fee Code
+newCustomersRow["MiscCode"] = callContextBpmData.Character01;
+//Set the rowmod to A for ADD
+newCustomersRow["RowMod"] = "A";
+//Write the data to the table
+ttOrderMsc.Add(newCustomersRow);

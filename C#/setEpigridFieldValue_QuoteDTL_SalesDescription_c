@@ -1,0 +1,21 @@
+/*Set a value of an Epigrid --> QuoteDTL.SalesDescription_c*/
+//Reference the colour table & create the dataset UD11
+Ice.Tables.UD11 UD11;
+//Loop through the lines in Quote DTL table
+foreach (var ttQuoteDtl_xRow in ttQuoteDtl)
+{
+        foreach (var ttQuoteDtl_iterator in (from ttQuoteDtl_Row in ttQuoteDtl
+                select ttQuoteDtl_Row))
+        {
+                var ttQuoteDtlRow = ttQuoteDtl_iterator;
+                if (ttQuoteDtl_xRow != null)
+                {
+                        //Populate the UD11 dataset
+                        UD11 = (from UD11_Row in Db.UD11
+                              where string.Compare(UD11_Row.Company, ttQuoteDtlRow.Company, true) == 0 && (UD11_Row.Key1 == ttQuoteDtlRow.PartNum)
+                              select UD11_Row).FirstOrDefault();
+                        //Set the BPMData field Character01 to the value of UD11 field Character01
+                        callContextBpmData.Character01 = UD11.Character01;
+                }
+}
+}
