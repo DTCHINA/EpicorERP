@@ -1,0 +1,22 @@
+    /* Set the salesQty to a rounded up whole number */
+//loop through the order DTL row
+foreach (var ttOrderDtl_iterator in (from ttOrderDtl_Row in ttOrderDtl
+//Check if the row is marked as added  (A) or updated (U) and select the row if it is
+where string.Compare(ttOrderDtl_Row.RowMod, ""A"", true) == 0 || string.Compare(ttOrderDtl_Row.RowMod, ""U"", true) == 0
+select ttOrderDtl_Row))
+{
+//set variable
+var ttOrderDtl_xRow = ttOrderDtl_iterator;
+//Set the BPM data field to a rounded up value (next whole number)
+callContextBpmData.Number01 = (int)Math.Ceiling(ttOrderDtl_xRow.OrderQty);
+//If the Number01 not equal to the selling Qty run..
+if (callContextBpmData.Number01 != ttOrderDtl_xRow.SellingQuantity)
+{
+//Set the temp table values to the BPM value
+ttOrderDtl_xRow.OrderQty = callContextBpmData.Number01;
+ttOrderDtl_xRow.SellingQuantity = callContextBpmData.Number01;
+//Display a confirmation message
+this.PublishInfoMessage(""Invalid Quantity, The Quantity has been rounded up to the nearest whole number which is : "" + callContextBpmData.Number01.ToString(), Ice.Common.BusinessObjectMessageType.Information, Ice.Bpm.InfoMessageDisplayMode.Individual, ""SalesOrder"", ""MasterUpdate"");
+}
+
+}
